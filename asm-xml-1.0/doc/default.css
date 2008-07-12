@@ -1,0 +1,39 @@
+body { 
+	font: 10pt Arial, Helvetica; 
+}
+pre { 
+	padding: 4px 4px 8px 4px; 
+	background: #E8E8FF 
+}
+h1 { 
+	color: #487070; 
+}
+h3 { 
+	padding: 1px 0px 1px 0px; 
+	color: #487070; 
+	border-color: #000000; 
+	border-style: solid; 
+	border-width: 0px 0px 1px 0px; 
+}
+td { 
+	font: 10pt Arial, Helvetica; 
+	vertical-align: top; 
+}
+a { 
+	text-decoration:none 
+}
+a:hover { 
+	color:#98B8B0 
+}
+.terms { 
+	background: #282A40 
+}
+.terms thead td { 
+	font-weight: bold; 
+	padding: 3px 8px 3px 8px; 
+	background: #E0E8FF 
+}
+.terms tbody td {
+	padding: 3px 8px 3px 8px; 
+	background: white 
+}

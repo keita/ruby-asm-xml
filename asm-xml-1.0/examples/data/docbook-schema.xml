@@ -1,0 +1,110 @@
+<schema>
+
+	<group name="commonAttributes">
+		<attribute name="arch" ignore="yes"/>
+		<attribute name="conformance" ignore="yes"/>
+		<attribute name="id" ignore="yes"/>
+		<attribute name="lang" ignore="yes"/>
+		<attribute name="os" ignore="yes"/>
+		<attribute name="remap" ignore="yes"/>
+		<attribute name="role" ignore="yes"/>
+		<attribute name="revision" ignore="yes"/>
+		<attribute name="revisionflag" ignore="yes"/>
+		<attribute name="changed" ignore="yes"/>
+		<attribute name="added" ignore="yes"/>
+		<attribute name="deleted" ignore="yes"/>
+		<attribute name="off" ignore="yes"/>
+		<attribute name="userlevel" ignore="yes"/>
+		<attribute name="vendor" ignore="yes"/>
+		<attribute name="xreflabel" ignore="yes"/>
+	</group>
+
+	<group name="titleElement">
+		<element name="title" type="text">
+			<include name="commonAttributes"/>
+		</element>
+	</group>
+
+	<group name="common">
+		<include name="commonAttributes"/>
+		<reference name="emphasis"/>
+		<reference name="filename"/>
+		<reference name="varname"/>
+		<reference name="guimenuitem"/>
+		<reference name="guimenu"/>
+		<reference name="code"/>
+		<reference name="programlisting"/>
+	</group>
+	
+	<collection name="emphasis" type="mixed" id="100">
+		<include name="common"/>
+	</collection>
+	<collection name="filename" type="mixed" id="101">
+		<include name="common"/>
+	</collection>
+	<collection name="varname" type="mixed" id="102">
+		<include name="common"/>
+	</collection>
+	<collection name="guimenuitem" type="mixed" id="103">
+		<include name="common"/>
+	</collection>
+	<collection name="guimenu" type="mixed" id="104">
+		<include name="common"/>
+	</collection>
+	<collection name="code" type="mixed" id="105">
+		<include name="common"/>
+	</collection>
+
+	<group name="divcomponent">
+		<reference name="para"/>
+		<reference name="itemizedlist"/>
+		<reference name="note"/>
+	</group>
+
+	<collection name="para" type="mixed" id="200">
+		<include name="common"/>
+		<reference name="itemizedlist"/>
+	</collection>
+	<collection name="note" type="mixed" id="201">
+		<include name="titleElement"/>
+		<include name="common"/>
+		<reference name="itemizedlist"/>
+	</collection>
+
+	<collection name="itemizedlist" id="40">
+		<reference name="listitem"/>
+	</collection>
+
+	<collection name="listitem" id="41" type="mixed">
+		<include name="common"/>
+		<include name="divcomponent"/>
+	</collection>
+
+	<collection name="section" type="mixed" id="23">
+		<include name="titleElement"/>
+		<include name="divcomponent"/>
+		<reference name="section"/>
+		<reference name="simplesect"/>
+	</collection>
+
+	<collection name="simplesect" type="mixed" id="24">
+		<include name="titleElement"/>
+		<include name="divcomponent"/>
+		<reference name="simplesect"/>
+	</collection>
+
+	<collection name="programlisting" id="202" type="text"/>
+	
+	<document name="book">
+		<collection name="preface" id="21">
+			<include name="titleElement"/>
+			<include name="divcomponent"/>
+			<reference name="section"/>
+		</collection>
+		<collection name="chapter" id="22">
+			<include name="titleElement"/>
+			<reference name="section"/>
+		</collection>
+	</document>
+
+</schema>

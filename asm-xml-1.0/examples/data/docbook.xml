@@ -1,0 +1,389 @@
+<?xml version="1.0"?>
+<book>
+<!--[of]:Introduction-->
+<preface>
+<title id="ty-12345">Introduction</title>
+
+<para id="ty-12345">Code Browser is a text editor that allows you to structure your 
+source code like an hyper-text document: 
+the source code can be cut into pages independently of
+the file structure. A page can be referenced using links or can be nested 
+into another page. It gives a better visibilty on large projects and makes
+navigation easier.</para>
+
+<para id="ty-12345">For a quick start, open <filename>samples/tutorial.c</filename>
+with the application.</para>
+<!--[c]-->
+<!--[of]:Principle-->
+<section>
+<title id="ty-12345">Principle</title>
+
+<para id="ty-12345">Special directives are inserted in the source code as comments.
+The file saved on disk is completely compatible with any
+programming language having comments (single or multi-lines). It does not
+require any transformation before processing.</para>
+
+</section>
+<!--[cf]-->
+<!--[of]:Relative Indentation-->
+<section>
+<title id="ty-12345">Relative indentation</title>
+
+<para id="ty-12345">Code Browser can fold a text file in two ways:  with absolute indentation or
+with relative indentation. The mode can be defined independently for each configuration.
+Here is two examples:
+</para>
+
+<itemizedlist>
+<listitem id="ty-12345">Absolute indentation
+<programlisting>
+line1
+    line2
+//[of]:    This is a folder
+    line3
+    line4
+//[cf]
+</programlisting></listitem>
+
+<listitem>Relative indentation
+<programlisting>
+line1
+    line2
+    //[of]:This is a folder
+    line3
+    line4
+    //[cf]
+</programlisting></listitem>
+</itemizedlist>
+
+<para id="ty-12345">In both cases the header is indented, but when you edit the content 
+of the first folder, the text is also indented, whereas in the second one the 
+text will start at column 1.</para>
+
+<para id="ty-12345">By default, absolute indentation is used.</para>
+
+<para id="ty-12345">The relative indentation is useful for indentation sensitive syntaxes 
+such as Python:
+when editing the content of a sub-folder, you don't have to care about
+indentation, just indent or unindent its header to update its real indentation.
+</para>
+
+<para id="ty-12345">The relative indentation is auto-detected when loading a file (the tags
+are indented), so anybody can open it and read it with the same indentation 
+wihtout having to change their settings.</para>
+	
+</section>
+<!--[cf]-->
+<!--[c]-->
+</preface>
+<!--[cf]-->
+<!--[of]:Concepts-->
+<chapter>
+<title>Concepts</title>
+<!--[c]-->
+<!--[of]:Files and Windows-->
+<section>
+<title id="ty-12345">Files and Windows</title>
+
+<para id="ty-12345">The application supports two independent features:
+<itemizedlist>
+<listitem id="ty-12345">multiple files</listitem>
+<listitem id="ty-12345">multiple windows</listitem>
+</itemizedlist>
+A loaded file can be displayed in zero, one or more windows.</para>
+
+<para id="ty-12345">Usually, a text editor has only one window per file.
+When you want to open a file that is already opened, it just brings 
+its window to front. With Code Browser, a file is loaded only 
+once but several windows can be opened on it.</para>
+<!--[c]-->
+<simplesect>
+<title id="ty-12345">Opening a File</title>
+<para id="ty-12345">The <guimenuitem>Open</guimenuitem> command from the 
+<guimenu>File</guimenu> menu opens a file in a new window. 
+If this file is already loaded, it is not reloaded.</para>
+</simplesect>
+<!--[c]-->
+<simplesect>
+<title id="ty-12345">Viewing Loaded Files</title>
+<para id="ty-12345">The <guimenuitem>Files</guimenuitem> command from the 
+<guimenu>File</guimenu> menu shows all loaded files 
+and allows to open or re-open a file in a new window.</para>
+</simplesect>
+<!--[c]-->
+<simplesect>
+<title id="ty-12345">Closing a Window</title>
+<para id="ty-12345">Use the <guimenuitem>Close</guimenuitem> command from the 
+<guimenuitem>Window</guimenuitem> menu to close the active window.
+This command does not unload any file. That's why it never asks for
+save confirmation. Confirmations occur only when exiting.</para>
+</simplesect>
+<!--[c]-->
+<simplesect>
+<title id="ty-12345">Cloning a Window</title>
+<para id="ty-12345">Use the <guimenuitem>Clone</guimenuitem> command from the 
+<guimenuitem>Window</guimenuitem> menu to create an exact copy of
+the active window: the new window will have the same layouts that display
+the same folders in panes.</para>
+</simplesect>
+<!--[c]-->
+<simplesect>
+<title id="ty-12345">Reloading a File</title>
+<para id="ty-12345">A file can be reloaded when it is modified by another application.
+The <code>reload.mode</code> in options can change the behavior when
+an external file change is detected:
+<itemizedlist>
+<listitem id="ty-12345"><code>never</code>: never reload</listitem>
+<listitem id="ty-12345"><code>ask</code>: ask before reload</listitem>
+<listitem id="ty-12345"><code>always</code>: reload without asking unless the file is modified</listitem>
+</itemizedlist>
+Sometimes some windows could unexpectedly disapear while reloading. 
+But don't worry, the file has been reloaded and you can re-open a window 
+on it with the 
+<guimenuitem>Files...</guimenuitem> command from the 
+<guimenuitem>File</guimenuitem> menu.
+It happens only with windows displaying sub-folders and where changes occured
+on a parent folder.
+</para>
+</simplesect>
+<!--[c]-->
+</section>
+<!--[cf]-->
+<!--[of]:Folders and Links-->
+<section>
+<title id="ty-12345">Folders and Links</title>
+<!--[c]-->
+<!--[of]:Folders-->
+<section>
+<title id="ty-12345">Folders</title>
+
+<para id="ty-12345">A folder is a group of lines collapsed into one single line.
+A folder can include sub-folders. By default, folder lines are
+displayed in blue. Folders can be used only with a 
+language having a comment directive.</para>
+<!--[c]-->
+<simplesect>
+<title id="ty-12345">Inserting a New Folder</title>
+ 
+<para id="ty-12345">The <guimenuitem>Folder</guimenuitem> command from the
+<guimenu>Insert</guimenu> menu opens the folder creation dialog.
+Enter a name and an identifier. 
+Use <code>\t</code> to put tabs in the name.
+The identifier is needed only if you want to reference this folder 
+(i.e. creating a link to it).</para>
+
+<para id="ty-12345">Any text selected before is moved into the newly created folder. 
+This feature helps to structure an existing flat file.</para>
+</simplesect>
+<!--[c]-->
+<simplesect>
+<title id="ty-12345">Editing Folder Properties</title>
+
+<para id="ty-12345">When the caret is on a folder, you can use the
+<guimenuitem>Properties</guimenuitem> command from the
+<guimenu>Edit</guimenu> menu to modify its name and identifier.</para>
+
+<para id="ty-12345">The command is also available from the contextual menu.</para>
+</simplesect>
+<!--[c]-->
+<simplesect>
+<title id="ty-12345">Entering into a Folder</title>
+
+<para id="ty-12345">When the caret is on a folder, you can use the
+<guimenuitem>Enter</guimenuitem> command (<code>ALT-Right</code>) 
+from the <guimenu>Go</guimenu> menu 
+to edit its content.</para>
+
+<para id="ty-12345">This command is also available by double-clicking on the line.</para>
+</simplesect>
+<!--[c]-->
+<simplesect>
+<title id="ty-12345">Leaving a Folder</title>
+
+<para id="ty-12345">To go back to the previous folder, use the 
+<guimenuitem>Back</guimenuitem> command (<code>ALT-Left</code>)
+from the <guimenu>Go</guimenu> menu.</para>
+</simplesect>
+<!--[c]-->
+</section>
+<!--[cf]-->
+<!--[of]:Links-->
+<section>
+<title id="ty-12345">Links</title>
+
+<para id="ty-12345">A link is a reference to a folder either in the same file or in an 
+other file. This concept is similar to links in HTML documents. It can be 
+useful to add links to related items (related functions, definitions of 
+classes, ...).</para>
+
+<para id="ty-12345">A link is similar to a folder: the <guimenuitem>Enter</guimenuitem> 
+command follows the link instead of opening a folder.
+Properties are edited in the same way.</para>
+
+<para id="ty-12345">By default, link lines are displayed in green.</para>
+
+<para id="ty-12345">The syntax for the path is:
+<programlisting>
+&lt;filename&gt;[#&lt;folder-path&gt;]
+</programlisting></para>
+
+<para id="ty-12345">Where <code>&lt;filename&gt;</code> is the filename with path relative 
+to the current file. The path separators are '/' even on Windows platform, 
+not '\' in order to have platform independent files. 
+<code>&lt;folder-path&gt;</code> is optional, it is the path in the file to reach 
+the target folder. The path separators are also '/' between folders.</para>
+
+</section>
+<!--[cf]-->
+<!--[of]:Special Links-->
+<section>
+<title id="ty-12345">Special Links</title>
+
+<para id="ty-12345">It is possible to create special links pointing to a line identified by a line number
+or a regular expression.</para>
+
+<para id="ty-12345">Link to a line in a folder:
+<programlisting>
+&lt;filename&gt;[#&lt;folder-path&gt;]?ln=&lt;line-number&gt;
+</programlisting></para>
+
+<para id="ty-12345">Link to a line in a file:
+<programlisting>
+&lt;filename&gt;?aln=&lt;line-number&gt;
+</programlisting></para>
+
+<para id="ty-12345">Link to the first line matching a regular expression:
+<programlisting>
+&lt;filename&gt;[#&lt;folder-path&gt;]?s=&lt;regular-expression&gt;
+</programlisting>
+or case insensitive:
+<programlisting>
+&lt;filename&gt;[#&lt;folder-path&gt;]?is=&lt;regular-expression&gt;
+</programlisting>
+</para>
+
+</section>
+<!--[cf]-->
+<!--[of]:Note-->
+<note>
+<title id="ty-12345">Reminder</title>
+<itemizedlist>
+<listitem id="ty-12345">A folder (blue) owns its content</listitem>
+<listitem id="ty-12345">A link (green) is a reference to a remote folder</listitem>
+</itemizedlist>
+In short: deleting a blue line deletes the content, deleting the green line
+has no effect on the source code.
+</note>
+<!--[cf]-->
+<!--[c]-->
+</section>
+<!--[cf]-->
+<!--[of]:Layouts-->
+<section>
+<title id="ty-12345">Layouts</title>
+
+<para id="ty-12345">Each window can show one or more panes: each one
+displays the content of the folder or link selected by its predecessor.
+The layout of the active window can be changed using the 
+<guimenu>View</guimenu> menu.</para>
+
+<para id="ty-12345">There is 3 classes of layouts.</para>
+<!--[c]-->
+<simplesect>
+<title id="ty-12345">One Pane</title>
+<para id="ty-12345">Display only one folder. This is the default mode.</para>
+</simplesect>
+<!--[c]-->
+<simplesect>
+<title id="ty-12345">Two Panes</title>
+<para id="ty-12345">Can be arranged horizontally or vertically. The second
+pane displays a preview of the line selected by the first pane.</para>
+</simplesect>
+<!--[c]-->
+<simplesect>
+<title id="ty-12345">More than Two Panes</title>
+
+<para id="ty-12345">This is more complex layouts, there is several
+'list' panes arranged in a row or a column and a 'text' pane at the bottom 
+or the right.</para>
+
+<para id="ty-12345">A folder is displayed in a list pane if it contains only 
+links, sub-folders and comments but no text, otherwise it is 
+displayed in the text pane.</para>
+
+</simplesect>
+<!--[c]-->
+<simplesect>
+<title id="ty-12345">Tree View</title>
+<para id="ty-12345">Display one folder and a tree view of the file. Sub-folders can
+be reached directly with this tree. Links are also expanded in the tree.
+</para>
+</simplesect>
+<!--[c]-->
+<simplesect>
+<title id="ty-12345">Customizing the default layout</title>
+<para id="ty-12345">The layout can be customized for each configuration. So it is possible to
+open a file in a new window with a layout depending on the file type.
+There is two attributes in the general section of preferences: 'layout'
+and 'tree.view'. These attributes can be overridden for each configuration.
+See the preferences file for more information.</para>
+</simplesect>
+<!--[c]-->
+</section>
+<!--[cf]-->
+<!--[of]:Undo - Redo-->
+<section>
+<title id="ty-12345">Undo - Redo</title>
+
+<para id="ty-12345">There is an unlimited undo stack for each loaded file.</para>
+
+<para id="ty-12345">You must be careful since a window can display several files
+and several windows can display the same file: <guimenuitem>undo</guimenuitem> may cancel a 
+change made in another window if the focus is in the wrong pane.
+Anyway an <guimenuitem>undo</guimenuitem> operation can always be undone with 
+the <guimenuitem>redo</guimenuitem> command.</para>
+
+</section>
+<!--[cf]-->
+<!--[of]:Find and Replace-->
+<section>
+<title id="ty-12345">Find and Replace</title>
+
+<para id="ty-12345">Code Browser has two types of search and replace: iterative and global.
+The global one searches all occurrences of a string and displays a list of links
+to matching lines. The two modes does not support same features:</para>
+
+<simplesect>
+<title>Iterative Search/Replace </title>
+<itemizedlist>
+<listitem>Cannot find text in headlines</listitem>
+<listitem>Cannot follow links</listitem>
+<listitem>Cannot search in sub-folders if scope is current folder</listitem>
+</itemizedlist>
+</simplesect>
+
+<simplesect>
+<title>Global Search/Replace</title>
+<itemizedlist>
+<listitem id="ty-12345">Can find text in headlines</listitem>
+<listitem id="ty-12345">Can follow links</listitem>
+<listitem id="ty-12345">Can search in sub-folders</listitem>
+<listitem id="ty-12345">Can search in current selection</listitem>
+<listitem id="ty-12345">Can search in multiple files</listitem>
+</itemizedlist>
+</simplesect>
+
+<note id="ty-12345">For convenience, there is a 'Replace All' accessible from the iterative 
+replace dialog. But consider using the global replace instead because it reports
+modified lines.</note>
+
+<note id="ty-12345">In this application, the term 'folder' means folded sections inside text files, so to
+avoid confusions with folders on disks, the 'directory' term will be used to refer to disk
+folders</note>
+
+</section>
+<!--[cf]-->
+<!--[c]-->
+</chapter>
+<!--[cf]-->
+</book>

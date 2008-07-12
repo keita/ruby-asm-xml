@@ -1,0 +1,431 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/1999/REC-html401-19991224/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="default.css" />
+<title>AsmXml - Documentation</title>
+</head>
+<body bgcolor="#FFFFFF" link="#487070" vlink="#487070" marginwidth="32" marginheight="32" leftmargin="32" topmargin="32" >
+<!--[c]-->
+<!--[of]:Building the Library-->
+<h3>Building the Library</h3>
+
+<p>The library is released as an object file (<tt>.o</tt> or <tt>.obj</tt>) 
+instead of a dynamic linking library.  It will increase the size of your application 
+by about 10K. I'm sure that if you are working with XML, you won't worry 
+about 10K :-)
+
+<p>The binaries are already available in the distribution in the 
+<b>MS-COFF</b>, <b>ELF</b> and <b>Mach-O</b> formats, so you shouldn't 
+have to build the library from sources unless you want to do modifications.
+
+<!--[cf]-->
+<!--[of]:Adding the Library to Your Project-->
+<h3>Adding the Library to Your Project</h3>
+
+<ol>
+<li>Include the "include/asm-xml.h" file in your source file.
+<li>Link your project with the AsmXml object file.
+</ol>
+
+<p>Here are some tips to use it with various configurations:
+<ul>
+  <li><b>MSVC 6</b>: Add the <tt>obj\ms-coff\asm-xml.obj</tt> file to your project.
+  <li><b>MinGW</b>: Link your project with <tt>obj\ms-coff\asm-xml.obj</tt>.
+  <li><b>Linux</b>: Link your project with <tt>obj/elf/asm-xml.o</tt>.
+  <li><b>Mac OS X</b>: Link your project with <tt>obj/mach-o/asm-xml.o</tt>.
+</ul>
+
+<!--[cf]-->
+<!--[of]:Defining a Schema-->
+<h3>Defining a Schema</h3>
+
+<p>Like DOM, the parser creates an in-memory tree structure from the source
+document. Attributes and text-only elements can be directly accessed: you don't need
+lookup to find the value of an attribute or text element.
+
+<p>To decode attributes and elements, the parser needs a description of the
+structure of the document. AsmXml does not support (yet) DTD, XSD or
+Relax NG. It uses instead a simple XML schema file. 
+
+<p>The object that define the possible attributes and child elements of a
+given element is referred to as a <b>class</b>.
+
+<p><b>Example:</b>
+<p><pre>
+  &lt;schema&gt;
+    &lt;document name="employees"&gt;
+      &lt;collection name="employee"&gt;
+        &lt;attribute name="id"/&gt;
+        &lt;attribute name="managerId"/&gt;
+        &lt;text name="firstName"/&gt;
+        &lt;text name="lastName"/&gt;
+      &lt;/collection&gt;
+    &lt;/document&gt;
+  &lt;/schema&gt;
+</pre>
+
+<p>This schema describes a document where the root element is <tt>&lt;employees&gt;</tt>
+and include a list of <tt>&lt;employee&gt;</tt> elements.
+
+<p><b>Example of document matching this schema:</b>
+<p><pre>
+  &lt;?xml version="1.0" encoding="UTF-8"?&gt;
+  &lt;!-- List of employees of the company --&gt;
+  &lt;employees&gt;
+    &lt;employee id="001"&gt;
+      &lt;firstName&gt;Brian&lt;/firstName&gt;
+      &lt;lastName&gt;Williams&lt;/lastName&gt;
+    &lt;/employee&gt;
+    &lt;employee managerId="001" id="123"&gt;
+      &lt;lastName&gt;Smith&lt;/lastName&gt;
+      &lt;firstName&gt;John&lt;/firstName&gt;
+    &lt;/employee&gt;
+  &lt;/employees&gt;
+</pre>
+
+<p>A parsed document will give an indexed access to attributes and text elements. The index
+depends on the order of definition of properties of elements. For instance, in the previous example,
+the <tt>id</tt> attribute will be at position 0, <tt>managerId</tt> at 1, <tt>firstName</tt> at 2 and
+<tt>lastName</tt> at 3.
+
+<p>The parser won't take care of the order of the text elements since
+they will be assigned to a particular slot depending on the class definition.
+
+<p>Child elements will be added in a linked list in their original order.
+
+<h4>The <i>schema</i> element</h4>
+
+<p>The root element is the <tt>&lt;schema&gt;</tt> element and it includes:
+<ul>
+<li>Zero or more <tt>&lt;collection&gt;</tt> elements that can be reused. This element
+cannot contain <tt>&lt;attribute&gt;</tt> or <tt>&lt;element&gt;</tt> items.
+<li>One <tt>&lt;document&gt;</tt> element. This element defines the root class, i.e.
+the definition of the root element. It supports the same attributes and elements as a
+<tt>&lt;collection&gt;</tt>, see below.
+</ul>
+<!--[c]-->
+<h4>The <i>collection</i> element</h4>
+
+<p>A collection defines an element that can occur zero or more time in a parent element.
+These elements will be accessibles from the parent's link list of child elements.
+
+<p><b>Attributes</b>
+<p>
+<table class="terms">
+<thead>
+<tr><td>Name</td><td>Comment</td></tr>
+</thead>
+<tbody>
+<tr><td>name</td><td>The name of the element.</td></tr>
+<tr><td>type</td><td>The type of the element. It defines what should be found between the tags:
+	<ul>
+	<li><tt>'container'</tt> - (default) the element includes other child elements, text between tags is ignored.
+	<li><tt>'mixed'</tt> - like container, but text between elements are added as elements where the attribute[0]
+		is the text.
+	<li><tt>'text'</tt> - includes only text. the attribute[0] is this text, other attributes start at 1.
+	</ul></td></tr>
+<tr><td>id</td><td>An integer that uniquely identifies the class of the element against its siblings.
+	This id is useless when an element can contain only one kind of children, but it becomes
+	mandatory if there is several type of children.</td></tr>
+</tbody>
+</table>
+
+<p><b>Elements</b>
+<p>
+<table class="terms">
+<thead>
+<tr><td>Name</td><td>Comment</td></tr>
+</thead>
+<tbody>
+<tr><td>attribute</td><td>An attribute.</td></tr>
+<tr><td>text</td><td>A text element.</td></tr>
+<tr><td>collection</td><td>A list of child elements.</td></tr>
+<tr><td>element</td><td>A single element.</td></tr>
+<tr><td>reference</td><td>A reference to a collection defined under the <tt>&lt;schema&gt;</tt> element.</td></tr>
+<tr><td>include</td><td>Include the content of a group defined under the <tt>&lt;schema&gt;</tt> element.</td></tr>
+</tbody>
+</table>
+<!--[c]-->
+<h4>The <i>element</i> element</h4>
+
+<p>The element is similar to a collection except that it can occur at most once in
+the parent element and you have a direct access to its value instead of enumerating 
+the list of children.
+
+<p>In fact, a cell of the <tt>attribute[]</tt> array holds an <tt>AXElement*</tt> instead of
+an <tt>AXAttribute</tt>.
+<!--[c]-->
+<h4>The <i>attribute</i> element</h4>
+
+<p>Adds an attribute to the class.
+
+<p>Attributes are directly accessed from an array, their index corresponds to their order
+of definition starting to 0, or 1 if the element is of type <tt>'text'</tt>.
+
+<p><b>Attributes</b>
+<p>
+<table class="terms">
+<thead>
+<tr><td>Name</td><td>Comment</td></tr>
+</thead>
+<tbody>
+<tr><td>name</td><td>The name of the atrtribute.</td></tr>
+<tr><td>ignore</td><td>Forces the parser to ignore this attribute. The attribute is just skipped. This improves performances and saves memory.
+	<ul>
+	<li><tt>'no'</tt> - (default) the attribute is not ignored.
+	<li><tt>'yes'</tt> - the attribute is ignored.
+	</ul></td></tr>
+</tbody>
+</table>
+<!--[c]-->
+<h4>The <i>text</i> element</h4>
+
+<p>Adds a child element without attribute and containing only text.
+
+<p>text elements are directly accessed from an array, their index corresponds to their order
+of definition (including attributes) starting to 0.
+
+<p><b>Attributes</b>
+<p>
+<table class="terms">
+<thead>
+<tr><td>Name</td><td>Comment</td></tr>
+</thead>
+<tbody>
+<tr><td>name</td><td>The name of the element.</td></tr>
+<tr><td>ignore</td><td>Forces the parser to ignore this text element. The element is just skipped. This improves performances and saves memory.
+	<ul>
+	<li><tt>'no'</tt> - (default) the element is not ignored.
+	<li><tt>'yes'</tt> - the element is ignored.
+	</ul></td></tr>
+</tbody>
+</table>
+<!--[c]-->
+<h4>The <i>reference</i> element</h4>
+
+<p>Allows to include a collection that is defined under the <tt>&lt;schema&gt;</tt> element.
+<p>The reference can appear before the target definition as well as afterward.
+
+<p><b>Attributes</b>
+<p>
+<table class="terms">
+<thead>
+<tr><td>Name</td><td>Comment</td></tr>
+</thead>
+<tbody>
+<tr><td>name</td><td>The name of the collection defined under the <tt>&lt;schema&gt;</tt> element.</td></tr>
+</tbody>
+</table>
+<!--[c]-->
+<h4>The <i>include</i> element</h4>
+
+<p>Allows to include the <b>content</b> of a group that is defined under the <tt>&lt;schema&gt;</tt> element.
+<p>the target must be defined before the include.
+
+<p><b>Attributes</b>
+<p>
+<table class="terms">
+<thead>
+<tr><td>Name</td><td>Comment</td></tr>
+</thead>
+<tbody>
+<tr><td>name</td><td>The name of the group defined under the <tt>&lt;schema&gt;</tt> element.</td></tr>
+</tbody>
+</table>
+<!--[c]-->
+<h4>The <i>group</i> element</h4>
+
+<p>A group is just a container to be included in a collection or an element.
+It support the same child elements as a collection and is identified by a name.
+
+<!--[c]-->
+<!--[cf]-->
+<!--[of]:Exploring the Document-->
+<h3>Exploring the Document</h3>
+
+<p>The parse function will return, if succeeded, a pointer to an <tt>AXElement</tt> object. All you need
+to read the parse document are the <tt>AXElement</tt> and <tt>AXAttribute</tt> structures.
+
+<h4>AXElement</h4>
+<table class="terms">
+<thead>
+<tr><td>Name</td><td>Type</td><td>Comment</td></tr>
+</thead>
+<tbody>
+<tr><td>id</td><td>int</td><td>The id (the type) of the element</td></tr>
+<tr><td>nextSibling</td><td>AXElement*</td><td>The next sibling element</td></tr>
+<tr><td>firstChild </td><td>AXElement*</td><td>The first child element</td></tr>
+<tr><td>attributes</td><td>AXAttribute[]</td><td>The array of attributes and text element</td></tr>
+</tbody>
+</table>
+
+<p>The first attribute corresponds to the first <tt>&lt;attribute&gt;</tt>, <tt>&lt;text&gt;</tt>
+or <tt>&lt;element&gt;</tt> declared in the class definition, the second attribute corresponds 
+to the next <tt>&lt;attribute&gt;</tt>, <tt>&lt;text&gt;</tt> or <tt>&lt;element&gt;</tt>, etc...
+
+<p>The id is an integer that uniquely identifies the element. It is defined in a <tt>&lt;collection&gt;</tt>
+element. The id is required when you need to discriminate between one element type and another.
+
+<p><b>Example:</b>
+<p><pre>
+  &lt;schema&gt;
+    &lt;document name="body"&gt;
+      &lt;collection name="b" id="1" type="text"/>&gt;
+      &lt;collection name="i" id="2" type="text"/>&gt;
+    &lt;/document&gt;
+  &lt;/schema&gt;
+</pre>
+
+<p>The id '0' is reserved for text elements appearing in mixed content.
+
+<h4>AXAttribute</h4>
+<table class="terms">
+<thead>
+<tr><td>Name</td><td>Type</td><td>Comment</td></tr>
+</thead>
+<tbody>
+<tr><td>begin</td><td>char*</td><td>Beginning of the value</td></tr>
+<tr><td>limit</td><td>char*</td><td>Last char + 1</td></tr>
+</tbody>
+</table>
+
+
+<!--[cf]-->
+<!--[of]:Functions-->
+<h3>Functions</h3>
+
+<ul>
+
+<li><h4>ax_initialize</h4>
+<p>Initializes the library.
+<p><tt>void ax_initialize(malloc, free)</tt>
+<p><b>Arguments</b>
+<table>
+<tr><td><i>malloc</i></td><td>The memory alllocation function.</td></tr>
+<tr><td><i>free</i></td><td>The free memory function.</td></tr>
+</table>
+<p><b>Description</b>
+<p>This function initializes the library, it must be the first invoked function of the library.
+
+
+<h4>ax_initializeParser</h4>
+<p>Initializes the parse context.
+<p><tt>int  ax_initializeParser(AXParseContext* context, uint chunkSize)</tt>
+<p><b>Arguments</b>
+<table>
+<tr><td><i>context</i></td><td>The parse context.</td></tr>
+<tr><td><i>chunkSize</i></td><td>The default size of chunk.</td></tr>
+</table>
+<p><b>Return Value</b>
+<p>The error code, 0 if ok.
+
+
+<li><h4>ax_releaseParser</h4>
+<p>Releases the parse context.
+<p><tt>void ax_releaseParser(AXParseContext* context)</tt>
+<p><b>Arguments</b>
+<table>
+<tr><td><i>context</i></td><td>The parse context.</td></tr>
+<tr><td><i>chunkSize</i></td><td>The default size of chunk.</td></tr>
+</table>
+<p><b>Description</b>
+<p>This function will release all memory resources allocated by this context,
+i.e. all documents parsed with this context will be deleted.
+
+
+<li><h4>ax_parse</h4>
+<p>Parses and decodes an XML string.
+<p><tt>AXElement* ax_parse(AXParseContext* context, const char* source, AXElementClass* type, int strict)</tt>
+<p><b>Arguments</b>
+<table>
+<tr><td><i>context</i></td><td>The parse context.</td></tr>
+<tr><td><i>source</i></td><td>The source of the document to parse.</td></tr>
+<tr><td><i>type</i></td><td>The type of the document to parse.</td></tr>
+<tr><td><i>strict</i></td><td>If this value is zero, attributes and elements not defined in the schema will be ignored without error.
+Otherwise, the function will stop parsing at the first unknown element or attribute.</td></tr>
+</table>
+<p><b>Description</b>
+<p>Returns the root element or NULL if the parsing fails. In case of failure, checks the 
+<tt>context->errorCode</tt> value.
+
+	
+<li><h4>ax_initializeClassParser</h4>
+<p>Initializes the class parser.
+<p><tt>int ax_initializeClassParser(AXClassContext* context)</tt>
+<p><b>Arguments</b>
+<table>
+<tr><td><i>context</i></td><td>The class parser.</td></tr>
+</table>
+<p><b>Return Value</b>
+<p>Returns error code, 0 if ok.
+
+
+<li><h4>ax_releaseClassParser</h4>
+<p>Releases the class parser.
+<p><tt>ax_releaseClassParser(AXClassContext* context)</tt>
+<p><b>Arguments</b>
+<table>
+<tr><td><i>context</i></td><td>The class context.</td></tr>
+</table>
+<p><b>Description</b>
+<p>Releases all resources allocated by this context. All
+classes created with this context will be deleted.
+
+
+<li><h4>ax_classFromElement</h4>
+<p>Creates a class from an element.
+<p><tt>AXElementClass* ax_classFromElement(AXElement* element, AXClassContext* context)</tt>
+<p><b>Arguments</b>
+<table>
+<tr><td><i>element</i></td><td>The class definition.</td></tr>
+<tr><td><i>context</i></td><td>The class context.</td></tr>
+</table>
+<p><b>Return Value</b>
+<p>Returns the created class or null if an error occurred.
+
+
+<li><h4>ax_classFromString</h4>
+<p>Creates a class from a string.
+<p><tt>AXElementClass* ax_classFromString(const char* string, AXClassContext* context)</tt>
+<p><b>Arguments</b>
+<table>
+<tr><td><i>string</i></td><td>The source of the class definition.</td></tr>
+<tr><td><i>context</i></td><td>The class context.</td></tr>
+</table>
+<p><b>Return Value</b>
+<p>Returns the created class or null if an error occurred.
+
+</ul>
+<!--[cf]-->
+<!--[of]:Error Codes-->
+<h3>Error Codes</h3>
+
+<p>When an error occurs, check the errorCode attribute of the <tt>AXClassContext</tt> or
+<tt>AXParseContext</tt> for more information on the type of error.
+
+<center>
+<table class="terms">
+<thead>
+<tr><td>Name</td><td>Comment</td></tr>
+</thead>
+<tbody>
+<tr><td>RC_OK</td><td>Everything is ok</td></tr>
+<tr><td>RC_MEMORY</td><td>Out of memory</td></tr>
+<tr><td>RC_EMPTY_NAME</td><td>name empty or not defined</td></tr>
+<tr><td>RC_ATTR_DEFINED</td><td>Attribute already defined</td></tr>
+<tr><td>RC_INVALID_ENTITY_REFERENCE</td><td>Must be amp, quot, lt, gt, or apos</td></tr>
+<tr><td>RC_UNEXPECTED_END</td><td>Found last char too early</td></tr>
+<tr><td>RC_INVALID_CHAR</td><td>Wrong char</td></tr>
+<tr><td>RC_OVERFLOW</td><td>Number to big in char reference</td></tr>
+<tr><td>RC_NO_START_TAG</td><td>XML does not start with a tag</td></tr>
+<tr><td>RC_TAG_MISMATCH</td><td>Invalid close tag</td></tr>
+<tr><td>RC_INVALID_TAG</td><td>Invalid root element</td></tr>
+</tbody>
+</table>
+</center>
+
+<!--[cf]-->
+<!--[c]-->
+</body>
+</html>

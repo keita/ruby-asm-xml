@@ -1,0 +1,14 @@
+<schema>
+
+	<document name="employees">
+		<collection name="employee">
+			<attribute name="id"/>
+			<attribute name="managerId"/>
+			<text name="firstName"/>
+			<text name="lastName"/>
+			<text name="email"/>
+			<text name="position"/>
+		</collection>
+	</document>
+
+</schema>

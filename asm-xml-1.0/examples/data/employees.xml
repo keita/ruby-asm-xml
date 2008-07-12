@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- List of employees of the company -->
+
+<employees>
+
+	<employee id="001">
+		<firstName>Brian</firstName>
+		<lastName>Williams</lastName>
+		<email>bwilliams@company.com</email>
+		<position>Chief Executive Officer</position>
+	</employee>
+
+	<employee id="123" managerId="001">
+		<firstName>John</firstName>
+		<lastName>Smith</lastName>
+		<email>jsmith@company.com</email>
+		<position>Sales Manager</position>
+	</employee>
+
+	<employee id="456" managerId="001">
+		<firstName>Robert</firstName>
+		<lastName>Anderson</lastName>
+		<email>randerson@company.com</email>
+		<position>Marketing Manager</position>
+	</employee>
+
+	<employee id="789" managerId="123">
+		<position>Sales Agent</position>
+		<firstName>David</firstName>
+		<lastName>Moore</lastName>
+		<email>dmoore@company.com</email>
+	</employee>
+
+</employees>
